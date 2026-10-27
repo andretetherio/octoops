@@ -3253,10 +3253,18 @@ async function ensureRepo(org, repo, prev, dry, done) {
   // state alone is no proof the repo exists, a failed apply saves partial
   // progress (and a missing renamedFrom records itself) before anything was
   // created. check GitHub once and record it so later applies skip the call
-  const existing = prev.exists === true || (await getRepo(org, repo.name))
+  let existing = prev.exists === true
+  let redirect = null
+  if (!existing) {
+    // gh api follows the redirect github keeps for a renamed repo, so the old
+    // name answers with the renamed one. that repo is not ours, the name is free
+    const found = await getRepo(org, repo.name)
+    existing = found !== null && sameName(found.name, repo.name)
+    if (found && !existing) redirect = found.name
+  }
   if (existing) done.exists = true
   if (!existing) {
-    print(dry, 'create', `${org}/${repo.name}`)
+    print(dry, 'create', `${org}/${repo.name}`, redirect && 'name redirects to ' + org + '/' + redirect)
     if (!dry) {
       await createRepo(org, repo)
       // only now is the repo really there, recording it earlier would make a

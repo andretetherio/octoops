@@ -70,6 +70,8 @@ Just changing `name` in the JSON and running `apply` does **not** rename — it 
 
 If the new name is already taken (typically by the empty repo such a mistaken apply left behind), octoops refuses. Delete it yourself with `gh repo delete <org>/<new-name>` and rerun — octoops never deletes repos.
 
+After a rename the old name is free to reuse (e.g. rename `app` to `app-prv`, then add a new public `app`). GitHub keeps redirecting the old name to the renamed repo until something takes it, but apply only counts a repo as existing when GitHub answers under the configured name, so it creates the new repo instead of reconciling the renamed one. The same goes for a repo renamed outside octoops while the config still has its old name: update the config (or use `renamedFrom`) first, or apply creates an empty repo under the old name.
+
 Respects GitHub API rate limits automatically.
 
 ## Configuration

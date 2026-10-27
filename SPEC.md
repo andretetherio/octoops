@@ -62,7 +62,7 @@ reconciles actual state with desired state using `gh api` calls.
 ## What apply does per repo (in order)
 
 1. If `renamedFrom` is set and state has not recorded that rename yet, rename that repo on GitHub and move the state entry (errors if the new name is already taken)
-2. Create repo if it doesn't exist
+2. Create repo if it doesn't exist (a GitHub redirect from a renamed repo does not count as existing)
 3. Patch description / visibility if changed
 4. Set topics
 5. For each team: add/update permission if wrong, remove if not in desired list
